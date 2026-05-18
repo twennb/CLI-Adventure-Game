@@ -2,12 +2,12 @@
 
 internal class Room
 {
-    private string Name { get; set; }
-    private string Description { get; set; }
-    private int N { get; set; }
-    private int S { get; set; }
-    private int E { get; set; }
-    private int W { get; set; }
+    public string Name { get; }
+    public string Description { get; }
+    public int N { get; }
+    public int S { get; }
+    public int E { get; }
+    public int W { get; }
 
     public Room (string name, string desc, int n, int s, int e, int w)
     {
