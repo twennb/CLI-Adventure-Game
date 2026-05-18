@@ -51,17 +51,30 @@ public class Program()
         string output = "> ok\n";
         string cleanInput = userInput.Trim().ToLower();
 
-        if (cleanInput != "q")
+        if (cleanInput == "q")
         {
-            if (cleanInput == "")
-            {
-                output = $"\n> You must enter a command. \n";
-            } 
-            else
-            {
-                List<string> wordList = new(cleanInput.Split(delims, StringSplitOptions.RemoveEmptyEntries));
-                output = ParseInput(wordList);
-            }
+            return output;
+        }
+
+        if (cleanInput == "h")
+        {
+            return "> The program takes two word commands. \n" +
+                "> The first word has to be a verb and forms the command itself. \n" +
+                "> The second word is the noun you wish to interact with. \n" +
+                "> Allowed commands: \n" +
+                ">\tTake \n" +
+                ">\tDrop \n" +
+                "> Enter 'q' at any time to quit.";
+        }
+        if (cleanInput == "")
+        {
+            output = $"\n> You must enter a command. \n" +
+                "> enter 'h' for help.";
+        } 
+        else
+        {
+            List<string> wordList = new(cleanInput.Split(delims, StringSplitOptions.RemoveEmptyEntries));
+            output = ParseInput(wordList);
         }
 
         return output;
@@ -77,7 +90,8 @@ public class Program()
 
         if (wordList.Count != 2)
         {
-            Console.WriteLine("\n> Only 2 word commands are allowed!");
+            Console.WriteLine("\n> Only 2 word commands are allowed! \n" +
+                            "> enter 'h' for help.");
         }
         else
         {
@@ -87,12 +101,12 @@ public class Program()
 
             if (!commands.Contains(verb))
             {
-                output += $"\n> {verb} is not a recognised command!";
+                output += $"\n> {verb} is not a recognised command! Enter 'h' for help with commands.";
                 valid = false;
             }
             if (!objects.Contains(noun))
             {
-                output += $"\n> {noun} is not a recognised object!";
+                output += $"\n> {noun} is not an available object!";
                 valid = false;
             }
             if (valid)
