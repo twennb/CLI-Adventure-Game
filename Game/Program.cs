@@ -1,120 +1,200 @@
 ﻿using Game.Models;
+using System.Xml;
 
 namespace Game;
 
 public class Program()
 {
-    static readonly Room[] map = new Room[4];
-
+    private static Room[] _map;
+    private static Actor _player;
+    
     public static void Main(string[] args)
     {
-        SetupMap();
+        InitGame();
+        RunGame();
+    }
 
-        string userInput;
+    private static void InitGame()
+    {
+        Room room0 = new("Your Office",
+            "a cramped, dark office. Nothing stands out",
+            -1, -1, 1, -1);
 
-        Console.WriteLine("> \n");
-        
+        Room room1 = new("The Hallway",
+            "a long hallway connecting different rooms",
+            2, 3, -1, 0);
+
+        Room room2 = new("The Server Room",
+            "a vast room filled with server stacks and the whirr of electronics. It's chilly",
+            -1, 1, -1, -1);
+
+        Room room3 = new("The Stairwell",
+            "a tall staircase that goes up and down as far as you can see. Don't look down for too long",
+            1, -1, -1, -1);
+
+        _map = new Room[4];
+
+        _map[0] = room0;
+        _map[1] = room1;
+        _map[2] = room2;
+        _map[3] = room3;
+
+        _player = new("You", "The Player", _map[0]);
+    }
+    private static void RunGame()
+    {
+        string userInput = "";
+        string output = "";
+        string message = "Welcome to this exciting office adventure game!\n\n" +
+                         $"You are in {_player.Location.Name}.\n" +
+                         $"It is {_player.Location.Description}.\n";
+
+        Console.WriteLine(message);
+
         do
         {
-            userInput = Console.ReadLine();
+            Console.Write("> ");
 
-            // method to split input into verb and noun, return as list with verb in index 0 and noun in index 1
-            string output = RunInput(userInput);
-            // method to parse verb and noun from list
-            
-            Console.WriteLine(output + "\n");
+            userInput = Console.ReadLine();
+            output = RunInput(userInput);
+
+            Console.WriteLine(output);
         } while (userInput != "q");
     }
 
-    public static void SetupMap()
-    {
-        map[0] = new("Your Office", 
-            "A cramped, dark office. Nothing stands out.",
-            -1, -1, 1, -1);
-
-        map[1] = new("The Hallway", 
-            "A long hallway connecting different rooms.",
-            2, 3, -1, 0);
-
-        map[2] = new("The Server Room",
-            "A vast room filled with server stacks and the whirr of electronics. It's chilly.",
-            -1, 1, -1, -1);
-
-        map[3] = new("The Stairwell",
-            "Stairs go up and down as far as you can see. Don't look down for too long!",
-            1, -1, -1, -1);
-    }
-
-    public static string RunInput(string userInput)
+    private static string RunInput(string userInput)
     {
         char[] delims = [' ', '.' ];
-        string output = "> ok\n";
+        string output = "ok \n";
         string cleanInput = userInput.Trim().ToLower();
 
-        if (cleanInput == "q")
+        if (cleanInput != "q")
         {
-            return output;
+            if (cleanInput != "h") 
+            { 
+                if (cleanInput != "")
+                {
+                    List<string> wordList = new(cleanInput.Split(delims, StringSplitOptions.RemoveEmptyEntries));
+                    output = ParseInput(wordList);
+                }
+                else
+                {
+                    output = $"You must enter a command. \n" +
+                        "Enter 'h' for help. \n";
+                }
+            }
+            else
+            {
+                output = "The program reads written commands. \n" +
+                    "The first word has to be a verb and forms the command itself. \n" +
+                    "The second word is the noun or direction you wish to interact with. \n" +
+                    "The command to Look does not need a second word. \n" +
+                    "Allowed commands: \n" +
+                    "\tTake [noun] \n" +
+                    "\tDrop [noun] \n" +
+                    "\tLook \n" +
+                    "\tMove [direction] \n" +
+                    "You can try to Move in the following directions: \n" +
+                    "\t N \n" +
+                    "\t E \n" +
+                    "\t S \n" +
+                    "\t W \n" +
+                    "Enter 'q' at any time to quit. \n";
+            }
         }
+        return output;
+    }
+    private static string ParseInput(List<string> wordList)
+    {
+        string[] commands = ["take", "drop", "move", "look"];
+        string[] objects = ["pen", "paper"];
+        string[] directions = ["n", "north", "s", "south", "e", "east", "w", "west"];
+        
+        string verb;
+        string noun;
+        string direction;
+        
+        verb = wordList[0];
+        
+        if (!commands.Contains(verb))
+        {
+            return $"{verb} is not a recognised command! Enter 'h' for help. \n";
+        }
+         
+        if (wordList.Count == 1 && verb == "look")
+        {
+            return Look();
+        }
+        
+        if (objects.Contains(wordList[1]))
+        {
+            noun = wordList[1];
 
-        if (cleanInput == "h")
-        {
-            return "> The program takes two word commands. \n" +
-                "> The first word has to be a verb and forms the command itself. \n" +
-                "> The second word is the noun you wish to interact with. \n" +
-                "> Allowed commands: \n" +
-                ">\tTake \n" +
-                ">\tDrop \n" +
-                "> Enter 'q' at any time to quit.";
+            return $"You {verb} the {noun} \n";
         }
-        if (cleanInput == "")
+        else if (directions.Contains(wordList[1]))
         {
-            output = $"\n> You must enter a command. \n" +
-                "> enter 'h' for help.";
-        } 
+            direction = wordList[1];
+
+            switch (direction)
+            {
+                case "n" or "north":
+                    return MovePlayer(_player.Location.N, "North");
+                case "s" or "south":
+                    return MovePlayer(_player.Location.S, "South");
+                case "e" or "east":
+                    return MovePlayer(_player.Location.E, "East");
+                case "w" or "west":
+                    return MovePlayer(_player.Location.W, "West");
+                default:
+                    return "Command is not understood. \n";
+            }
+        }
         else
         {
-            List<string> wordList = new(cleanInput.Split(delims, StringSplitOptions.RemoveEmptyEntries));
-            output = ParseInput(wordList);
+            return $"I don't understand '{wordList[1]}'. \n";
+        }
+    }
+
+    private static string MovePlayer(int targetRoom, string direction)
+    {
+        string output = $"You move {direction}. ";
+
+        if (targetRoom != -1)
+        {
+            _player.Location = _map[targetRoom];
+            output += $"You enter {_map[targetRoom].Name}. \n";
+        }
+        else
+        {
+            output = "There is no room in that direction. \n";
         }
 
         return output;
     }
-
-    public static string ParseInput(List<string> wordList)
+    private static string Look()
     {
-        string[] commands = ["take", "drop"];
-        string[] objects = ["pen", "paper"];
-        string verb;
-        string noun;
-        string output = "";
-
-        if (wordList.Count != 2)
+        Room currentRoom = _player.Location;
+        string possiblePaths = "";
+        
+        Dictionary<string, int> paths = new Dictionary<string, int>
         {
-            Console.WriteLine("\n> Only 2 word commands are allowed! \n" +
-                            "> enter 'h' for help.");
-        }
-        else
-        {
-            verb = wordList[0];
-            noun = wordList[1];
-            bool valid = true;
+            {"North", currentRoom.N },
+            {"South", currentRoom.S },
+            {"East", currentRoom.E },
+            {"West", currentRoom.W }
+        };
 
-            if (!commands.Contains(verb))
+        foreach (KeyValuePair<string, int> kvp in paths)
+        {
+            if (kvp.Value != -1)
             {
-                output += $"\n> {verb} is not a recognised command! Enter 'h' for help with commands.";
-                valid = false;
-            }
-            if (!objects.Contains(noun))
-            {
-                output += $"\n> {noun} is not an available object!";
-                valid = false;
-            }
-            if (valid)
-            {
-                output += $"\n> You {verb} the {noun}.";
+                possiblePaths += $"\t{kvp.Key} \n";
             }
         }
 
-        return output;
+        return $"You see {_player.Location.Description}. \n" +
+                "This room has the following exits: \n" +
+                $"{possiblePaths}";
     }
 }
