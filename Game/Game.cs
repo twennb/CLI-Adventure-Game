@@ -4,7 +4,7 @@ namespace Game;
 
 internal class Game
 {
-    private Room[] _map;
+    private Dictionary<string, Room> _map;
     private Actor _player;
 
     public Game()
@@ -15,19 +15,27 @@ internal class Game
 
     private void InitGame()
     {                                                                               // N   S  E   W
-        Room room0 = new("Your Office", "a cramped, dark office. Nothing stands out", -1, -1, 1, -1);
-        Room room1 = new("The Hallway", "a long hallway connecting different rooms",   2, 3, -1, 0);                                 // N   S  E   W
-        Room room2 = new("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly",         -1, 1, -1, -1);
-        Room room3 = new("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", 1, -1, -1, -1);
+        //Room room0 = new("Your Office", "a cramped, dark office. Nothing stands out", -1, -1, 1, -1);
+        //Room room1 = new("The Hallway", "a long hallway connecting different rooms",   2, 3, -1, 0);                                 // N   S  E   W
+        //Room room2 = new("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly",         -1, 1, -1, -1);
+        //Room room3 = new("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", 1, -1, -1, -1);
 
-        _map = new Room[4];
+        _map = new Dictionary<string, Room>()
+        {                                                                                   //         N          S            E            W 
+            { "Your Office", new Room("Your Office", "a cramped, dark office. Nothing stands out", "No Exit", "No Exit", "The Hallway", "No Exit") },
+            { "The Hallway", new Room("The Hallway", "a long hallway connecting different rooms",   "The Server Room", "The Stairwell", "No Exit", "Your Office") },
+            { "The Server Room", new Room("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly", "No Exit", "The Hallway", "No Exit", "No Exit") },
+            { "The Stairwell", new Room("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", "The Hallway", "No Exit", "No Exit", "No Exit") }
+        };
 
-        _map[0] = room0;
-        _map[1] = room1;
-        _map[2] = room2;
-        _map[3] = room3;
+        //_map = new Room[4];
 
-        _player = new("You", "The Player", _map[0]);
+        //_map[0] = room0;
+        //_map[1] = room1;
+        //_map[2] = room2;
+        //_map[3] = room3;
+
+        _player = new("You", "The Player", _map["Your Office"]);
     }
     private void RunGame()
     {
@@ -141,18 +149,18 @@ internal class Game
         }
     }
 
-    private string MovePlayer(int targetRoom, string direction)
+    private string MovePlayer(string targetRoom, string direction)
     {
-        string output = $"You move {direction}. ";
+        string output = $"You attempt to move {direction}. \n";
 
-        if (targetRoom != -1)
+        if (targetRoom.ToLower() != "no exit")
         {
             _player.Location = _map[targetRoom];
             output += $"You enter {_map[targetRoom].Name}. \n";
         }
         else
         {
-            output = "There is no room in that direction. \n";
+            output += "There is no room in that direction. \n";
         }
 
         return output;
@@ -162,17 +170,17 @@ internal class Game
         Room currentRoom = _player.Location;
         string possiblePaths = "";
 
-        Dictionary<string, int> paths = new Dictionary<string, int>
-    {
-        {"North", currentRoom.N },
-        {"South", currentRoom.S },
-        {"East", currentRoom.E },
-        {"West", currentRoom.W }
-    };
-
-        foreach (KeyValuePair<string, int> kvp in paths)
+        Dictionary<string, string> paths = new Dictionary<string, string>
         {
-            if (kvp.Value != -1)
+            {"North", currentRoom.N },
+            {"South", currentRoom.S },
+            {"East", currentRoom.E },
+            {"West", currentRoom.W }
+        };
+
+        foreach (KeyValuePair<string, string> kvp in paths)
+        {
+            if (kvp.Value.ToLower() != "no exit")
             {
                 possiblePaths += $"\t{kvp.Key} \n";
             }
