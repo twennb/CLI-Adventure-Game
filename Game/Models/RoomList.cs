@@ -1,13 +1,13 @@
 ﻿namespace Game.Models;
 
-internal class RoomList : Dictionary<Rooms, Room>
+internal class RoomList : Dictionary<Rm, Room>
 {
     public RoomList()
     {
         
     }
 
-    public string DescribeRoom(Rooms rm)
+    public string DescribeRoom(Rm rm)
     {
         string desc = this[rm].Description;
 

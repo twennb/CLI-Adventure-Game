@@ -1,6 +1,6 @@
 ﻿namespace Game;
 
-public enum Rooms
+public enum Rm
 {
     NOEXIT = -1,
     OFFICE,

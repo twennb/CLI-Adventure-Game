@@ -4,7 +4,7 @@ namespace Game;
 
 internal class Game
 {
-    private Dictionary<string, Room> _map;
+    private RoomList _map;
     private Actor _player;
 
     public Game()
@@ -14,28 +14,15 @@ internal class Game
     }
 
     private void InitGame()
-    {                                                                               // N   S  E   W
-        //Room room0 = new("Your Office", "a cramped, dark office. Nothing stands out", -1, -1, 1, -1);
-        //Room room1 = new("The Hallway", "a long hallway connecting different rooms",   2, 3, -1, 0);                                 // N   S  E   W
-        //Room room2 = new("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly",         -1, 1, -1, -1);
-        //Room room3 = new("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", 1, -1, -1, -1);
+    {
+        _map = new();
+                                                                                                // N          S          E           W
+        _map.Add(Rm.OFFICE, new Room("Your Office", "a cramped, dark office. Nothing stands out", Rm.NOEXIT, Rm.NOEXIT, Rm.HALLWAY, Rm.NOEXIT));
+        _map.Add(Rm.HALLWAY, new Room("The Hallway", "a long hallway connecting different rooms", Rm.SERVER, Rm.STAIR, Rm.NOEXIT, Rm.OFFICE));// N          S           E       W
+        _map.Add(Rm.SERVER, new Room("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly", Rm.NOEXIT, Rm.HALLWAY, Rm.NOEXIT, Rm.NOEXIT));
+        _map.Add(Rm.STAIR, new Room("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", Rm.HALLWAY, Rm.NOEXIT, Rm.NOEXIT, Rm.NOEXIT));
 
-        _map = new Dictionary<string, Room>()
-        {                                                                                   //         N          S            E            W 
-            { "Your Office", new Room("Your Office", "a cramped, dark office. Nothing stands out", "No Exit", "No Exit", "The Hallway", "No Exit") },
-            { "The Hallway", new Room("The Hallway", "a long hallway connecting different rooms",   "The Server Room", "The Stairwell", "No Exit", "Your Office") },
-            { "The Server Room", new Room("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly", "No Exit", "The Hallway", "No Exit", "No Exit") },
-            { "The Stairwell", new Room("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", "The Hallway", "No Exit", "No Exit", "No Exit") }
-        };
-
-        //_map = new Room[4];
-
-        //_map[0] = room0;
-        //_map[1] = room1;
-        //_map[2] = room2;
-        //_map[3] = room3;
-
-        _player = new("You", "The Player", _map["Your Office"]);
+        _player = new("You", "The Player", _map[Rm.OFFICE]);
     }
     private void RunGame()
     {
@@ -52,49 +39,49 @@ internal class Game
             Console.Write("> ");
 
             userInput = Console.ReadLine();
-            output = RunInput(userInput);
+            output = CleanInput(userInput);
 
             Console.WriteLine(output);
         } while (userInput != "q");
     }
 
-    private string RunInput(string userInput)
+    private string CleanInput(string userInput)
     {
         char[] delims = [' ', '.'];
         string output = "ok \n";
         string cleanInput = userInput.Trim().ToLower();
 
-        if (cleanInput != "q")
+        switch (cleanInput)
         {
-            if (cleanInput != "h")
-            {
-                if (cleanInput != "")
-                {
-                    List<string> wordList = new(cleanInput.Split(delims, StringSplitOptions.RemoveEmptyEntries));
-                    output = ParseInput(wordList);
-                }
-                else
-                {
-                    output = $"You must enter a command. \n" +
-                        "Enter 'h' for help. \n";
-                }
-            }
-            else
-            {
-                output = "The program reads written commands. \n" +
-                    "The first word has to be a verb and forms the command itself. \n" +
-                    "The second word is the noun or direction you wish to interact with. \n" +
-                    "The command to Look does not need a second word. \n" +
+            case "":
+                return output = $"You must enter a command. \n" +
+                                 "Enter 'h' for help. \n";
 
-                    "────────────────────────┬───────────────────────────────────────────────────\n" +
-                    " Allowed commands:  \t│ You can try to Move in the following directions:\n" +
-                    "   Take [noun]      \t│   North \n" +
-                    "   Drop [noun]      \t│   East \n" +
-                    "   Look             \t│   South \n" +
-                    "   Move [direction] \t│   West \n" +
-                    "────────────────────────┴───────────────────────────────────────────────────";
-            }
+            case "h" or "help":
+                return output = "The program reads written commands. \n" +
+                                "The first word has to be a verb and forms the command itself. \n" +
+                                "The second word is the noun or direction you wish to interact with. \n" +
+                                "The command to Look does not need a second word. \n" +
+                                "If you're not sure what to do, Look!\n" +
+                                "────────────────────────┬───────────────────────────────────────────────────\n" +
+                                " Allowed commands:  \t│ You can try to Move in the following directions:\n" +
+                                "   Take [noun]      \t│   North \n" +
+                                "   Drop [noun]      \t│   East \n" +
+                                "   Look             \t│   South \n" +
+                                "   Move [direction] \t│   West \n" +
+                                "────────────────────────┴───────────────────────────────────────────────────\n";
+
+            case "q" or "quit":
+                return output;
+
+            default:
+                break;
         }
+        
+        List<string> wordList = new(cleanInput.Split(delims, StringSplitOptions.RemoveEmptyEntries));
+        
+        output = ParseInput(wordList);
+
         return output;
     }
     private string ParseInput(List<string> wordList)
@@ -140,7 +127,7 @@ internal class Game
                 case "w" or "west":
                     return MovePlayer(_player.Location.W, "West");
                 default:
-                    return "Command is not understood. \n";
+                    return $"Command {verb} {wordList[1]} is not understood. \n";
             }
         }
         else
@@ -149,11 +136,11 @@ internal class Game
         }
     }
 
-    private string MovePlayer(string targetRoom, string direction)
+    private string MovePlayer(Rm targetRoom, string direction)
     {
         string output = $"You attempt to move {direction}. \n";
 
-        if (targetRoom.ToLower() != "no exit")
+        if (targetRoom != Rm.NOEXIT)
         {
             _player.Location = _map[targetRoom];
             output += $"You enter {_map[targetRoom].Name}. \n";
@@ -170,7 +157,7 @@ internal class Game
         Room currentRoom = _player.Location;
         string possiblePaths = "";
 
-        Dictionary<string, string> paths = new Dictionary<string, string>
+        Dictionary<string, Rm> paths = new Dictionary<string, Rm>
         {
             {"North", currentRoom.N },
             {"South", currentRoom.S },
@@ -178,11 +165,11 @@ internal class Game
             {"West", currentRoom.W }
         };
 
-        foreach (KeyValuePair<string, string> kvp in paths)
+        foreach (KeyValuePair<string, Rm> kvp in paths)
         {
-            if (kvp.Value.ToLower() != "no exit")
+            if (kvp.Value != Rm.NOEXIT)
             {
-                possiblePaths += $"\t{kvp.Key} \n";
+                possiblePaths += $"\t{kvp.Key} : {_map[kvp.Value].Name} \n";
             }
         }
 
