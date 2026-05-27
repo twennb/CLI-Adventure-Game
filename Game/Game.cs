@@ -48,28 +48,28 @@ internal class Game
     private string CleanInput(string userInput)
     {
         char[] delims = [' ', '.'];
-        string output = "ok \n";
+        string output = "ok \r\n";
         string cleanInput = userInput.Trim().ToLower();
 
         switch (cleanInput)
         {
             case "":
-                return output = $"You must enter a command. \n" +
-                                 "Enter 'h' for help. \n";
+                return output = $"You must enter a command. \r\n" +
+                                 "Enter 'h' for help. \r\n";
 
             case "h" or "help":
-                return output = "The program reads written commands. \n" +
-                                "The first word has to be a verb and forms the command itself. \n" +
-                                "The second word is the noun or direction you wish to interact with. \n" +
-                                "The command to Look does not need a second word. \n" +
-                                "If you're not sure what to do, Look!\n" +
-                                "────────────────────────┬───────────────────────────────────────────────────\n" +
-                                " Allowed commands:  \t│ You can try to Move in the following directions:\n" +
-                                "   Take [noun]      \t│   North \n" +
-                                "   Drop [noun]      \t│   East \n" +
-                                "   Look             \t│   South \n" +
-                                "   Move [direction] \t│   West \n" +
-                                "────────────────────────┴───────────────────────────────────────────────────\n";
+                return output = "The program reads written commands. \r\n" +
+                                "The first word has to be a verb and forms the command itself. \r\n" +
+                                "The second word is the noun or direction you wish to interact with. \r\n" +
+                                "The command to Look does not need a second word. \r\n" +
+                                "If you're not sure what to do, Look!\r\n" +
+                                "────────────────────────┬───────────────────────────────────────────────────\r\n" +
+                                " Allowed commands:  \t│ You can try to Move in the following directions:\r\n" +
+                                "   Take [noun]      \t│   North \r\n" +
+                                "   Drop [noun]      \t│   East \r\n" +
+                                "   Look             \t│   South \r\n" +
+                                "   Move [direction] \t│   West \r\n" +
+                                "────────────────────────┴───────────────────────────────────────────────────\r\n";
 
             case "q" or "quit":
                 return output;
@@ -98,7 +98,7 @@ internal class Game
 
         if (!commands.Contains(verb))
         {
-            return $"{verb} is not a recognised command! Enter 'h' for help. \n";
+            return $"{verb} is not a recognised command! Enter 'h' for help. \r\n";
         }
 
         if (wordList.Count == 1 && verb == "look")
@@ -110,7 +110,7 @@ internal class Game
         {
             noun = wordList[1];
 
-            return $"You {verb} the {noun} \n";
+            return $"You {verb} the {noun} \r\n";
         }
         else if (directions.Contains(wordList[1]))
         {
@@ -127,27 +127,27 @@ internal class Game
                 case "w" or "west":
                     return MovePlayer(_player.Location.W, "West");
                 default:
-                    return $"Command {verb} {wordList[1]} is not understood. \n";
+                    return $"Command {verb} {wordList[1]} is not understood. \r\n";
             }
         }
         else
         {
-            return $"I don't understand '{wordList[1]}'. \n";
+            return $"I don't understand '{wordList[1]}'. \r\n";
         }
     }
 
     private string MovePlayer(Rm targetRoom, string direction)
     {
-        string output = $"You attempt to move {direction}. \n";
+        string output = $"You attempt to move {direction}. \r\n";
 
         if (targetRoom != Rm.NOEXIT)
         {
             _player.Location = _map[targetRoom];
-            output += $"You enter {_map[targetRoom].Name}. \n";
+            output += $"You enter {_map[targetRoom].Name}. \r\n";
         }
         else
         {
-            output += "There is no room in that direction. \n";
+            output += "There is no room in that direction. \r\n";
         }
 
         return output;
@@ -169,13 +169,13 @@ internal class Game
         {
             if (kvp.Value != Rm.NOEXIT)
             {
-                possiblePaths += $"\t{kvp.Key} : {_map[kvp.Value].Name} \n";
+                possiblePaths += $"\t{kvp.Key} : {_map[kvp.Value].Name} \r\n";
             }
         }
 
-        return $"You are in {_player.Location.Name} \n" +
-               $"You see {_player.Location.Description}. \n" +
-               "This room has the following exits: \n" +
+        return $"You are in {_player.Location.Name} \r\n" +
+               $"You see {_player.Location.Description}. \r\n" +
+               "This room has the following exits: \r\n" +
                $"{possiblePaths}";
     }
 }
