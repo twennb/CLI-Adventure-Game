@@ -7,11 +7,6 @@ internal class RoomList : Dictionary<Rm, Room>
         
     }
 
-    public string DescribeRoom(Rm rm)
-    {
-        return this[rm].Describe();
-    }
-
     public string DebugMap()
     {
         string output = "";
