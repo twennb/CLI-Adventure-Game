@@ -15,4 +15,9 @@ internal class Room : Thing
         E = e;
         W = w;
     }
+
+    public string Describe()
+    {
+        return $"{Name}. It is {Description}.";
+    }
 }

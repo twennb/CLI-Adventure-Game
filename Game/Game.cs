@@ -86,7 +86,7 @@ internal class Game
     }
     private string ParseInput(List<string> wordList)
     {
-        string[] commands = ["take", "drop", "move", "look"];
+        string[] commands = ["take", "drop", "move", "look", "debug"];
         string[] objects = ["pen", "paper"];
         string[] directions = ["n", "north", "s", "south", "e", "east", "w", "west"];
 
@@ -104,6 +104,11 @@ internal class Game
         if (wordList.Count == 1 && verb == "look")
         {
             return Look();
+        }
+
+        if (wordList.Count == 1 && verb == "debug")
+        {
+            return _map.DebugMap();
         }
 
         if (objects.Contains(wordList[1]))
@@ -173,9 +178,8 @@ internal class Game
             }
         }
 
-        return $"You are in {_player.Location.Name} \r\n" +
-               $"You see {_player.Location.Description}. \r\n" +
-               "This room has the following exits: \r\n" +
+        return $"You are in {currentRoom.Describe()} \r\n" +
+               $"{currentRoom.Name} the following exits: \r\n" +
                $"{possiblePaths}";
     }
 }
