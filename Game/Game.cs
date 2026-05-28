@@ -16,13 +16,13 @@ internal class Game
     private void InitGame()
     {
         _map = new();
-                                                                                                // N          S          E           W
-        _map.Add(Rm.OFFICE, new Room("Your Office", "a cramped, dark office. Nothing stands out", Rm.NOEXIT, Rm.NOEXIT, Rm.HALLWAY, Rm.NOEXIT));
-        _map.Add(Rm.HALLWAY, new Room("The Hallway", "a long hallway connecting different rooms", Rm.SERVER, Rm.STAIR, Rm.NOEXIT, Rm.OFFICE));// N          S           E       W
-        _map.Add(Rm.SERVER, new Room("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly", Rm.NOEXIT, Rm.HALLWAY, Rm.NOEXIT, Rm.NOEXIT));
-        _map.Add(Rm.STAIR, new Room("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", Rm.HALLWAY, Rm.NOEXIT, Rm.NOEXIT, Rm.NOEXIT));
+                                                                                                                     // N          S          E           W
+        _map.Add(Rm.OFFICE, new Room("Your Office", "a cramped, dark office. Nothing stands out", new ThingList(), Rm.NOEXIT, Rm.NOEXIT, Rm.HALLWAY, Rm.NOEXIT));
+        _map.Add(Rm.HALLWAY, new Room("The Hallway", "a long hallway connecting different rooms", new ThingList(), Rm.SERVER, Rm.STAIR, Rm.NOEXIT, Rm.OFFICE));// N          S           E       W
+        _map.Add(Rm.SERVER, new Room("The Server Room", "a vast room filled with server stacks and the whirr of electronics. It's chilly", new ThingList(), Rm.NOEXIT, Rm.HALLWAY, Rm.NOEXIT, Rm.NOEXIT));
+        _map.Add(Rm.STAIR, new Room("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", new ThingList(), Rm.HALLWAY, Rm.NOEXIT, Rm.NOEXIT, Rm.NOEXIT));
 
-        _player = new("You", "The Player", _map[Rm.OFFICE]);
+        _player = new("You", "The Player", new ThingList(), _map[Rm.OFFICE]);
     }
     private void RunGame()
     {
@@ -38,7 +38,7 @@ internal class Game
         {
             Console.Write("> ");
 
-            userInput = Console.ReadLine();
+            userInput = Console.ReadLine()!;
             output = CleanInput(userInput);
 
             Console.WriteLine(output);
@@ -147,7 +147,7 @@ internal class Game
 
         if (targetRoom != Rm.NOEXIT)
         {
-            _player.Location = _map[targetRoom];
+            _player.UpdateLocation(_map[targetRoom]);
             output += $"You enter {_map[targetRoom].Name}. \r\n";
         }
         else

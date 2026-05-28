@@ -1,14 +1,12 @@
 ﻿namespace Game.Models;
 
-internal class Thing
+internal class Thing : CoreThing
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
+    private bool CanTake { get; }
 
-    public Thing(string name, string description)
+    public Thing(string name, string desc, bool canTake = true)
+        : base(name, desc)
     {
-        Name = name;
-        Description = description;
+        CanTake = canTake;
     }
-
 }

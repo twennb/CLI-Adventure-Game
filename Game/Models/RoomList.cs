@@ -22,7 +22,6 @@ internal class RoomList : Dictionary<Rm, Room>
                 output += $"{kvp.Value.Describe()} \r\n";
             }
         }
-            // otherwise run each rooms Describe method in turn.
 
             return output;
     }
