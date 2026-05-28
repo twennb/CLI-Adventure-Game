@@ -10,6 +10,7 @@ internal class Game
     public Game()
     {
         InitGame();
+        AddTreasure();
         RunGame();
     }
 
@@ -23,6 +24,10 @@ internal class Game
         _map.Add(Rm.STAIR, new Room("The Stairwell", "a tall staircase that goes up and down as far as you can see. Don't look down for too long", new ThingList(), Rm.HALLWAY, Rm.NOEXIT, Rm.NOEXIT, Rm.NOEXIT));
 
         _player = new("You", "The Player", new ThingList(), _map[Rm.OFFICE]);
+    }
+    private void AddTreasure()
+    {
+        _map[Rm.OFFICE].AddThing(new Treasure("A Regular Pen", "Regular in every way imaginable", 0));
     }
     private void RunGame()
     {
@@ -108,7 +113,7 @@ internal class Game
 
         if (wordList.Count == 1 && verb == "debug")
         {
-            return _map.DebugMap();
+            return Debug();
         }
 
         if (objects.Contains(wordList[1]))
@@ -181,5 +186,20 @@ internal class Game
         return $"You are in {currentRoom.Describe()} \r\n" +
                $"{currentRoom.Name} the following exits: \r\n" +
                $"{possiblePaths}";
+    }
+    private string Debug()
+    {
+        string output = "";
+
+        output += $"[Player inventory] \r\n {_player.Debug()} \r\n";
+        output += $"[Map Debug] \r\n {_map.DebugMap()} \r\n";
+
+        output += "[Room Debugs] \r\n";
+        foreach (KeyValuePair<Rm, Room> pair in _map)
+        {
+            output += $" [{pair.Value.Name}] {pair.Value.Debug()} \r\n";
+        }
+
+        return output;
     }
 }
