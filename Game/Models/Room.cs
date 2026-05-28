@@ -8,7 +8,7 @@ internal class Room : ThingHolder
     public Rm W { get; }
 
     public Room (string name, string desc, ThingList thingList, Rm n, Rm s, Rm e, Rm w)
-        : base (name, desc, false, thingList)
+        : base (name, desc, thingList)
     {
         N = n;
         S = s;

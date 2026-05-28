@@ -5,7 +5,7 @@ internal class Actor : ThingHolder
     public Room Location { get; private set; }
 
     public Actor(string name, string desc, ThingList thingList, Room room)
-        : base(name, desc, false, thingList)
+        : base(name, desc, thingList)
     {
         Location = room;
     }
